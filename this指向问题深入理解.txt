@@ -1,0 +1,70 @@
+面向过程（运动）
+面向对象
+
+1.function的this在不同调用环境下的指向
+ 》事件调用环境  谁触发事件，函数里面的this指向的就是谁
+ 》全局环境 函数自调用  strict mode下，就是undefined，否则是window 
+ 》node环境下  this === module.exports //true
+ 》函数内部
+    this最终指向的是调用它的对象
+    函数被多层对象所包含，如果函数被最外层对象调用，this指向的也只是它上一级的对象 //例：window.obj.fn()//obj
+ 》构造函数
+     new 干了什么？
+     创建一个新对象
+     this指向这个新对象
+     执行构造函数中的代码（为这个新对象添加属性方法）
+     返回新对象
+     function Fn() {
+    this.num = 10;
+}
+Fn.num = 20;
+Fn.prototype.num = 30;
+Fn.prototype.method = function() {
+    console.log(this.num);
+}
+var prototype = Fn.prototype;
+var method = prototype.method;
+new Fn().method();//10
+prototype.method();//30
+method();//undefined
+
+》构造函数return
+function Fn() {
+    this.num = 10;
+    return {};//返回的不是一个对象([],{},function),则返回的还是new时的那;个新对象
+}
+let a = new Fn();
+console.log(a.num);//return '' => 10,return {} => undefined
+》箭头函数this指向
+   箭头函数本身是没有this和arguments的，在箭头函数中引用this实际上调用的是定义时的上一层作用域的this。注：对象是不能形成独立的作用域
+  let obj = {
+    fn:() => {
+        console.log(this);
+    }
+}
+obj.fn();//window
+箭头函数中的this是在定义时已经决定了
+例：
+var box = document.querySelector('.box');
+var obj = {
+   fn:() => {
+     console.log(this);//定义时就已经是window了
+   }}
+   obj.fn.call(box);//想要this为box,实则还是window
+ es5修改this指向问题  call(thisObj,param1,param2)  apply(thisObj,[param1,param2]) bind(thisObj,param1,param2)()
+let obj = {
+    fn:function (){
+        console.log(this);
+    }
+}
+let b={a:1};
+obj.fn.call(b);
+
+let obj = {
+    fn:function (){
+        console.log(this);
+    }
+}
+let b={a:1};
+obj.fn.bind(b)();
+

@@ -1,0 +1,116 @@
+https://segmentfault.com/a/1190000011817793
+apply、call、bind
+因为apply、call存在于Function.prototype中，所以每个方法都有这两个属性。
+//找出数组最大值快捷
+var a=Math.max.apply(null,[ 1, 2, 5, 3, 4 ] );
+Math.max(...arr);
+
+call(thisObj,param1,param2)  apply(thisObj,[param1,param2]/arguments) bind(thisObj,param1,param2)()
+call和apply的第一个参数如果为null或者undefined,那么this指向window
+call和apply立即执行这个函数，bind方法可以让对应的函数想什么时候调就什么时候调用,并且可以将参数在执行的时候添加
+当参数的个数确定的情况下可以使用call;当参数的个数不确定的情况下可以使用apply
+call和apply的第一个参数如果为值类型的数据，那么会将这个值类型的数据，转换成其对应的引用类型的数据，然后再将this指向这个引用类型的数据
+
+var a ={
+    name : "Cherry",
+    fn : function () {
+        console.log(this);
+    }
+}
+var b = a.fn;
+b.call(a=2);//[Number: 2]
+
+
+var array1 = [12 , "foo" , {name:"Joe"} , -2458];
+var array2 = ["Doe" , 555 , 100];
+Array.prototype.push.apply(array1, array2);
+
+var arrayLike = {0: 'name', 1: 'age', 2: 'sex', length: 3 }
+let a=Array.prototype.join.call(arrayLike,'&'); // name&age&sex
+let b=Array.prototype.slice.call(arrayLike,0);//[ 'name', 'age', 'sex' ]
+
+call应用（判断复杂数据类型）
+console.log(
+    Object.prototype.toString.call(num),
+    Object.prototype.toString.call(str),
+    Object.prototype.toString.call(bool),
+    Object.prototype.toString.call(arr),
+    Object.prototype.toString.call(json),
+    Object.prototype.toString.call(func),
+    Object.prototype.toString.call(und),
+    Object.prototype.toString.call(nul),
+    Object.prototype.toString.call(date),
+    Object.prototype.toString.call(reg),
+    Object.prototype.toString.call(error)
+);
+// '[object Number]' '[object String]' '[object Boolean]' '[object Array]' '[object Object]'
+// '[object Function]' '[object Undefined]' '[object Null]' '[object Date]' '[object RegExp]' '[object Error]'
+
+
+箭头函数没有this,不能用作构造函数
+
+ function foo() {
+        console.log( this.a );
+    }
+    var a = 2;
+    var o = { a: 3, foo: foo };
+    var p = { a: 4 };
+    o.foo(); // 3
+    (p.foo = o.foo)(); // 2 p.foo = o.foo=>function(){},()()立即执行函数
+
+var A = function( name ){
+        //this 源自apply中的this => {}
+        this.name = name;
+        // {name:'seven'}
+    };
+    var B = function(){
+        //this => {}
+        A.apply(this,arguments);//执行函数体，为对象添加属性和方法
+        //A.apply({},'seven');
+        //默认返回该对象
+    };
+    B.prototype.getName = function(){
+        return this.name;
+    };
+    var b=new B('sven');
+    console.log( b.getName() );//seven
+    // 分析：
+    //    new 创建空对象
+    //        将this指向该对象
+    //        为该对象添加属性和方法
+    //        返回该对象
+
+function foo() {
+    console.log( this.a );
+}
+new绑定的优先级高于隐含绑定（new和call/apply不能同时使用，所以new foo.call(obj1)是不允许的
+报错：foo.call is not a constructor
+
+array.forEach(function(currentValue, index, arr), thisValue)
+	可选。传递给函数的值一般用 "this" 值。
+如果这个参数为空， "undefined" 会传递给 "this" 值
+
+function foo(el) {
+    console.log( el, this.id );
+}
+
+var obj = {
+    id: "awesome"
+};
+
+// 使用`obj`作为`this`来调用`foo(..)`
+[1, 2, 3].forEach( foo, obj ); // 1 awesome  2 awesome  3 awesome
+
+
+
+
+
+
+
+
+
+
+
+
+
+
